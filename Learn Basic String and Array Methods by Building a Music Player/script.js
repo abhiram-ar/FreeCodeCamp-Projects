@@ -169,7 +169,7 @@ const deleteSong = (id) => {
     resetButton.addEventListener("click", () => {
       userData.songs = [...allSongs];
 
-      renderSongs(userData?.songs); 
+      renderSongs(sortSongs()); 
       setPlayButtonAccessibleText();
       resetButton.remove();
     });
@@ -259,22 +259,28 @@ audio.addEventListener("ended", () => {
     } else {
       userData.currentSong = null;
       userData.songCurrentTime = 0;  
-
-
+pauseSong()
+setPlayerDisplay()
+highlightCurrentSong()
+setPlayButtonAccessibleText()
     }
 });
 
-userData?.songs.sort((a,b) => {
-  if (a.title < b.title) {
-    return -1;
-  }
+const sortSongs = () => {
+  userData?.songs.sort((a,b) => {
+    if (a.title < b.title) {
+      return -1;
+    }
 
-  if (a.title > b.title) {
-    return 1;
-  }
+    if (a.title > b.title) {
+      return 1;
+    }
 
-  return 0;
-});
+    return 0;
+  });
 
-renderSongs(userData?.songs);
+  return userData?.songs;
+};
+
+renderSongs(sortSongs());
 setPlayButtonAccessibleText();
