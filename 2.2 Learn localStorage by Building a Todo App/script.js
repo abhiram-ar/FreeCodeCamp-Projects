@@ -18,3 +18,26 @@ let currentTask = {};
 openTaskFormBtn.addEventListener("click", () =>
   taskForm.classList.toggle("hidden")
 );
+
+closeTaskFormBtn.addEventListener("click", () => {
+    confirmCloseDialog.showModal();
+  });
+
+
+//  If the user clicks the Cancel button, you want to cancel the process and 
+//  close the modal so the user can continue editing. The HTML dialog element 
+//  has a close() method that can be used to close a modal dialog box on a web page.
+cancelBtn.addEventListener('click', ()=>confirmCloseDialog.close())
+
+discardBtn.addEventListener('click',()=>{
+    confirmCloseDialog.close();
+    taskForm.classList.toggle('hidden')
+  })
+
+
+// add a submit event listener to your taskForm element and pass in e as the parameter 
+// of your arrow function. Inside the curly braces, use the preventDefault() method to 
+// stop the browser from refreshing the page after submitting the form.
+taskForm.addEventListener('submit', (e)=>{
+    e.preventDefault()
+  })
