@@ -40,4 +40,11 @@ discardBtn.addEventListener('click',()=>{
 // stop the browser from refreshing the page after submitting the form.
 taskForm.addEventListener('submit', (e)=>{
     e.preventDefault()
+    const dataArrIndex = taskData.findIndex((item) => item.id === currentTask.id);
+
+    // To make the id more unique, add another hyphen and use Date.now().
+    // Date.now() returns the number of milliseconds elapsed since January 1, 1970 00:00:00 UTC.
+    const taskObj = {
+        id: `${titleInput.value.toLowerCase().split(' ').join('-')}-${Date.now()}`,  
+      };
   })
