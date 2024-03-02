@@ -45,6 +45,30 @@ taskForm.addEventListener('submit', (e)=>{
     // To make the id more unique, add another hyphen and use Date.now().
     // Date.now() returns the number of milliseconds elapsed since January 1, 1970 00:00:00 UTC.
     const taskObj = {
-        id: `${titleInput.value.toLowerCase().split(' ').join('-')}-${Date.now()}`,  
+        id: `${titleInput.value.toLowerCase().split(' ').join('-')}-${Date.now()}`,
+        title: titleInput.value,
+        date: dateInput.value,
+        description: descriptionInput.value,  
       };
+
+    // Create an if statement with the condition dataArrIndex === -1. 
+    // Within the if statement, use the unshift() method to add the 
+    // taskObj object to the beginning of the taskData array.
+    if(dataArrIndex === -1){
+        taskData.unshift(taskObj);
+      }
+    
+    taskData.forEach(({id, title, date, description}) => {
+      (tasksContainer.innerHTML += `
+        <div class="task" id="${id}">
+          <p><strong>Title:</strong> ${title}</p>
+          <p><strong>Date:</strong> ${date}</p>
+          <p><strong>Description:</strong> ${description}</p>
+          <button type="button" class="btn">Edit</button>
+          <button type="button" class="btn">Delete</button>
+        </div>
+      `)
+    }
+  );
+
   })
