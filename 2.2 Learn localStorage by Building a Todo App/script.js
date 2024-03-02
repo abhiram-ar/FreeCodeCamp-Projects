@@ -13,6 +13,49 @@ const descriptionInput = document.getElementById("description-input");
 const taskData = [];
 let currentTask = {};
 
+const addOrUpdateTask = () => {
+    const dataArrIndex = taskData.findIndex((item) => item.id === currentTask.id);
+
+    // To make the id more unique, add another hyphen and use Date.now().
+    // Date.now() returns the number of milliseconds elapsed since January 1, 1970 00:00:00 UTC.
+    const taskObj = {
+      id: `${titleInput.value.toLowerCase().split(" ").join("-")}-${Date.now()}`,
+      title: titleInput.value,
+      date: dateInput.value,
+      description: descriptionInput.value,
+    };
+  
+    // Create an if statement with the condition dataArrIndex === -1. 
+    // Within the if statement, use the unshift() method to add the 
+    // taskObj object to the beginning of the taskData array.
+    if (dataArrIndex === -1) {
+      taskData.unshift(taskObj);
+    }
+    updateTaskContainer()
+    reset()
+  };
+
+const updateTaskContainer = () => {
+  tasksContainer.innerHTML = "";
+
+  taskData.forEach(
+    ({ id, title, date, description }) => {
+        (tasksContainer.innerHTML += `
+        <div class="task" id="${id}">
+          <p><strong>Title:</strong> ${title}</p>
+          <p><strong>Date:</strong> ${date}</p>
+          <p><strong>Description:</strong> ${description}</p>
+          <button type="button" class="btn">Edit</button>
+          <button type="button" class="btn">Delete</button> 
+        </div>
+      `)
+    }
+  );
+};
+
+
+
+
 const reset = () => {
     titleInput.value = "";
     dateInput.value = "";
@@ -55,39 +98,8 @@ discardBtn.addEventListener('click',()=>{
 // add a submit event listener to your taskForm element and pass in e as the parameter 
 // of your arrow function. Inside the curly braces, use the preventDefault() method to 
 // stop the browser from refreshing the page after submitting the form.
-taskForm.addEventListener('submit', (e)=>{
-    e.preventDefault()
-    const dataArrIndex = taskData.findIndex((item) => item.id === currentTask.id);
-
-    // To make the id more unique, add another hyphen and use Date.now().
-    // Date.now() returns the number of milliseconds elapsed since January 1, 1970 00:00:00 UTC.
-    const taskObj = {
-        id: `${titleInput.value.toLowerCase().split(' ').join('-')}-${Date.now()}`,
-        title: titleInput.value,
-        date: dateInput.value,
-        description: descriptionInput.value,  
-      };
-
-    // Create an if statement with the condition dataArrIndex === -1. 
-    // Within the if statement, use the unshift() method to add the 
-    // taskObj object to the beginning of the taskData array.
-    if(dataArrIndex === -1){
-        taskData.unshift(taskObj);
-      }
-    
-    taskData.forEach(({id, title, date, description}) => {
-      (tasksContainer.innerHTML += `
-        <div class="task" id="${id}">
-          <p><strong>Title:</strong> ${title}</p>
-          <p><strong>Date:</strong> ${date}</p>
-          <p><strong>Description:</strong> ${description}</p>
-          <button type="button" class="btn">Edit</button>
-          <button type="button" class="btn">Delete</button>
-        </div>
-      `)
-    }
-    
-    );
-    reset();
-
-  })
+taskForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+  
+    addOrUpdateTask();
+  });
