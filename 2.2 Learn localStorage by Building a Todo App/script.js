@@ -10,30 +10,28 @@ const titleInput = document.getElementById("title-input");
 const dateInput = document.getElementById("date-input");
 const descriptionInput = document.getElementById("description-input");
 
-const taskData = [];
+const taskData = JSON.parse(localStorage.getItem("data")) || [];
 let currentTask = {};
 
 const addOrUpdateTask = () => {
-    const dataArrIndex = taskData.findIndex((item) => item.id === currentTask.id);
-
-    // To make the id more unique, add another hyphen and use Date.now().
-    // Date.now() returns the number of milliseconds elapsed since January 1, 1970 00:00:00 UTC.
-    const taskObj = {
-      id: `${titleInput.value.toLowerCase().split(" ").join("-")}-${Date.now()}`,
-      title: titleInput.value,
-      date: dateInput.value,
-      description: descriptionInput.value,
-    };
-  
-    // Create an if statement with the condition dataArrIndex === -1. 
-    // Within the if statement, use the unshift() method to add the 
-    // taskObj object to the beginning of the taskData array.
-    if (dataArrIndex === -1) {
-      taskData.unshift(taskObj);
-    }
-    updateTaskContainer()
-    reset()
+  const dataArrIndex = taskData.findIndex((item) => item.id === currentTask.id);
+  const taskObj = {
+    id: `${titleInput.value.toLowerCase().split(" ").join("-")}-${Date.now()}`,
+    title: titleInput.value,
+    date: dateInput.value,
+    description: descriptionInput.value,
   };
+
+  if (dataArrIndex === -1) {
+    taskData.unshift(taskObj);
+  } else {
+    taskData[dataArrIndex] = taskObj;
+  }
+
+  localStorage.setItem("data", JSON.stringify(taskData));
+  updateTaskContainer()
+  reset()
+};
 
 const updateTaskContainer = () => {
   tasksContainer.innerHTML = "";
@@ -45,8 +43,8 @@ const updateTaskContainer = () => {
           <p><strong>Title:</strong> ${title}</p>
           <p><strong>Date:</strong> ${date}</p>
           <p><strong>Description:</strong> ${description}</p>
-          <button type="button" class="btn">Edit</button>
-          <button type="button" class="btn">Delete</button> 
+          <button onclick="editTask(this)" type="button" class="btn">Edit</button>
+          <button onclick="deleteTask(this)" type="button" class="btn">Delete</button> 
         </div>
       `)
     }
@@ -54,52 +52,69 @@ const updateTaskContainer = () => {
 };
 
 
+const deleteTask = (buttonEl) => {
+  const dataArrIndex = taskData.findIndex(
+    (item) => item.id === buttonEl.parentElement.id
+  );
 
+  buttonEl.parentElement.remove();
+  taskData.splice(dataArrIndex, 1);
+  localStorage.setItem("data", JSON.stringify(taskData));
+}
+
+const editTask = (buttonEl) => {
+    const dataArrIndex = taskData.findIndex(
+    (item) => item.id === buttonEl.parentElement.id
+  );
+
+  currentTask = taskData[dataArrIndex];
+
+  titleInput.value = currentTask.title;
+  dateInput.value = currentTask.date;
+  descriptionInput.value = currentTask.description;
+
+  addOrUpdateTaskBtn.innerText = "Update Task";
+
+  taskForm.classList.toggle("hidden");  
+}
 
 const reset = () => {
-    titleInput.value = "";
-    dateInput.value = "";
-    descriptionInput.value = "";
-    taskForm.classList.toggle("hidden");
-    currentTask = {};
-  }
-  
+addOrUpdateTaskBtn.innerText = "Add Task"
+  titleInput.value = "";
+  dateInput.value = "";
+  descriptionInput.value = "";
+  taskForm.classList.toggle("hidden");
+  currentTask = {};
+}
 
-// toggle add the class attribute if not present,
-// remove the class attribute if present
+if (taskData.length) {
+  updateTaskContainer();
+}
+
 openTaskFormBtn.addEventListener("click", () =>
   taskForm.classList.toggle("hidden")
 );
 
 closeTaskFormBtn.addEventListener("click", () => {
-    // You should display the Cancel and Discard buttons to the 
-    // user only if there is some text present in the input fields.
-    const formInputsContainValues = titleInput.value || dateInput.value || descriptionInput.value;
-    if(formInputsContainValues){
-        confirmCloseDialog.showModal();
-        }
-      else {
-        reset()
-      }
-  });
+  const formInputsContainValues = titleInput.value || dateInput.value || descriptionInput.value;
+  const formInputValuesUpdated = titleInput.value !== currentTask.title || dateInput.value !== currentTask.date || descriptionInput.value !== currentTask.description;
 
-
-//  If the user clicks the Cancel button, you want to cancel the process and 
-//  close the modal so the user can continue editing. The HTML dialog element 
-//  has a close() method that can be used to close a modal dialog box on a web page.
-cancelBtn.addEventListener('click', ()=>confirmCloseDialog.close())
-
-discardBtn.addEventListener('click',()=>{
-    confirmCloseDialog.close();
+  if (formInputsContainValues && formInputValuesUpdated) {
+    confirmCloseDialog.showModal();
+  } else {
     reset();
-  })
+  }
+});
 
+cancelBtn.addEventListener("click", () => confirmCloseDialog.close());
 
-// add a submit event listener to your taskForm element and pass in e as the parameter 
-// of your arrow function. Inside the curly braces, use the preventDefault() method to 
-// stop the browser from refreshing the page after submitting the form.
+discardBtn.addEventListener("click", () => {
+  confirmCloseDialog.close();
+  reset()
+});
+
 taskForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-  
-    addOrUpdateTask();
-  });
+  e.preventDefault();
+
+  addOrUpdateTask();
+});
